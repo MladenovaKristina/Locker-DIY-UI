@@ -4,22 +4,11 @@ import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease } from '
 import Helpers from '../../helpers/helpers';
 import Scenes from './scenes';
 import Hint from './hint';
+import Scene
 
-export default class SceneController extends DisplayObject {
+export default class MoveController extends DisplayObject {
     constructor() {
         super();
-        this._sceneNumer = 0;
     }
-
     onAdded() {
-        this.controller(this._sceneNumer);
     }
-
-    controller(sceneNumber) {
-        this._scenes = new Scenes(sceneNumber);
-        this.add(this._scenes);
-
-        this._hint = new Hint(sceneNumber, this._scenes._sceneElements);
-        this.add(this._hint)
-    }
-}

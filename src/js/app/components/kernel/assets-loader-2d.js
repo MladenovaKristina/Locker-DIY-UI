@@ -10,11 +10,11 @@ import btn_back from '../../../data/textures/btn_back.png';
 import text_banner from '../../../data/textures/UI/text-banner.png';
 import check from '../../../data/textures/UI/check.png';
 
-import blue_spray from '../../../data/textures/UI/blue-spray.png';
-import purple_spray from '../../../data/textures/UI/purple-spray.png';
-import red_spray from '../../../data/textures/UI/red-spray.png';
-import green_spray from '../../../data/textures/UI/green-spray.png';
-import yellow_spray from '../../../data/textures/UI/yellow-spray.png';
+import spray_0 from '../../../data/textures/UI/red-spray.png';
+import spray_1 from '../../../data/textures/UI/blue-spray.png';
+import spray_2 from '../../../data/textures/UI/purple-spray.png';
+import spray_3 from '../../../data/textures/UI/yellow-spray.png';
+import spray_4 from '../../../data/textures/UI/green-spray.png';
 
 import decoration_0 from '../../../data/textures/UI/cube.png';
 import decoration_1 from '../../../data/textures/UI/decor.png';
@@ -59,11 +59,11 @@ export default class AssetsLoader2D extends GameObject {
     assets.enqueueImage('btn_color', btn_color);
     assets.enqueueImage('btn_back', btn_back);
 
-    assets.enqueueImage('red_spray', red_spray);
-    assets.enqueueImage('blue_spray', blue_spray);
-    assets.enqueueImage('purple_spray', purple_spray);
-    assets.enqueueImage('yellow_spray', yellow_spray);
-    assets.enqueueImage('green_spray', green_spray);
+    assets.enqueueImage('spray_0', spray_0);
+    assets.enqueueImage('spray_1', spray_1);
+    assets.enqueueImage('spray_2', spray_2);
+    assets.enqueueImage('spray_3', spray_3);
+    assets.enqueueImage('spray_4', spray_4);
 
     assets.enqueueImage('check', check);
     assets.enqueueImage('text_banner', text_banner);

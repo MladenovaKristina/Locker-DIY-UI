@@ -4,7 +4,7 @@ import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
 
 export default class Hint extends DisplayObject {
-    constructor(sceneNumber) {
+    constructor(sceneNumber, sceneElements) {
         super();
 
         this._sign = null;
@@ -12,72 +12,58 @@ export default class Hint extends DisplayObject {
         this.scaleX = 1;
         this.scaleY = 1;
 
-        this.visible = false;
+        this.visible = true;
 
         this._sceneNumber = sceneNumber;
-        console.log("hint for", sceneNumber)
+        this._sceneElements = sceneElements;
     }
 
     onAdded() {
-        this._bg = new Graphics();
-        this._bg.fillStyle(0x000000, 0.5);
-        const w = 2000;
-        const h = 350;
-        this._bg.rect(-w / 2, -h / 2, w, h);
-        this._bg.fill();
-        this.add(this._bg);
-
-        this._sign = new Sprite('infinity_sign');
-        this._sign.alignAnchor(0.5, 0.5);
-        this._sign.y = 0;
-        this._sign.scaleX = 0.35;
-        this._sign.scaleY = 0.35;
-        this._sign.color = 0xffffff;
-        this.add(this._sign);
 
         // this._sign.blendMode = 'mask';
-
+        const bb = Black.stage.bounds;
         this._hand = new TutorialHand();
-        this._hand.x = 10;
-        this._hand.y = -30;
+        this._hand.x = this._sceneElements[0].x;
+        this._hand.y = bb.bottom - 300;
+
         this.add(this._hand);
 
         if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'INFINITY ONLY') this._hand.visible = false;
+        this.show();
+
     }
 
     show() {
         if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'NONE') return;
 
-        console.log('show')
+        console.log('show');
         this.visible = true;
 
-        this._hand.start();
+        const numElements = this._sceneElements.length;
+        let currentIndex = 0;
 
-        this._makeStep();
-    }
+        const tapAndMove = new Tween(
+            {
+                scaleX: [1, 0.7, 1],
+                scaleY: [1, 0.7, 1],
+            },
+            1,
+            { ease: Ease.sinusoidalOut, delay: 1 }
+        );
 
-    _makeStep() {
-        const scaleTw = new Tween({
-            scaleX: [0.33, 0.45, 0.33, 0.4, 0.33, 0.35, 0.35],
-            scaleY: [0.38, 0.28, 0.38, 0.3, 0.38, 0.35, 0.35],
-        }, 2, { ease: Ease.sinusoidalOut, delay: 1 });
-        this._sign.add(scaleTw);
+        tapAndMove.on('complete', () => {
+            currentIndex++;
+            if (currentIndex === numElements) {
+                currentIndex = 0;
+            }
+            const nextElement = this._sceneElements[currentIndex];
+            this._hand.x = nextElement.x;
 
-        const handMove = { v: 1.6 };
-        const handUpdateTween = new UTween(handMove, { v: 1.6 - Math.PI * 2 }, 1.5, { ease: Ease.sinusoidalInOut });
-        handUpdateTween.on('update', msg => {
-            this._hand.update(handMove.v);
         });
 
-        this._hand.playHintRotation();
-
-        const timer = new Timer(2.2, 1);
-        this.add(timer);
-
-        timer.on('tick', msg => {
-            this._makeStep();
-        });
+        this._hand.add(tapAndMove);
     }
+
 
     hide() {
         const hideTween = new Tween({
@@ -89,4 +75,3 @@ export default class Hint extends DisplayObject {
         hideTween.on('complete', msg => this.visible = false);
     }
 }
-
