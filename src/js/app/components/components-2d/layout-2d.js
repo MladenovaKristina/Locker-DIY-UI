@@ -10,6 +10,7 @@ import ReferencePhoto from './ref-photo';
 import SceneController from './scene-controller';
 import ObjectController from './object-controller';
 import Hint from './hint';
+import { MessageDispatcher } from "../../../utils/black-engine.module";
 
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
@@ -18,6 +19,11 @@ export default class Layout2D extends DisplayObject {
 
     this.onPlayBtnClickEvent = 'onPlayBtnClickEvent';
     this.onActionClickEvent = 'onActionClickEvent';
+
+    this.messageDispatcher = new MessageDispatcher();
+    this.onSelectEvent = 'onSelectEvent';
+    this.onDeselectEvent = 'onDeselectEvent';
+
 
     this._platform = model.platform;
     this._downloadBtn = null;
@@ -121,6 +127,16 @@ export default class Layout2D extends DisplayObject {
   _initObjectController() {
     this._objectController = new ObjectController(this._sceneController._scenes, this._hint);
     this.add(this._objectController)
+
+    this._objectController.messageDispatcher.on(this._objectController.onSelectEvent, (msg) => {
+      this.onSelectEvent = 'onSelectEvent';
+      this.messageDispatcher.post(this.onSelectEvent, msg);
+    });
+    this._objectController.messageDispatcher.on(this._objectController.onDeselectEvent, (msg) => {
+      this.onDeselectEvent = 'onDeselectEvent';
+      this.messageDispatcher.post(this.onDeselectEvent, msg);
+
+    });
   }
 
   onDown(x, y) {

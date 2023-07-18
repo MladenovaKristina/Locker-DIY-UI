@@ -9,12 +9,21 @@ export default class Scene extends DisplayObject {
         this._sceneNumber = sceneNumber;
         this._bg = null;
         this.object = null;
+        this.highlight = null;
         this._sceneElements = [];
         this.initView();
     }
 
     initView() {
         const bb = Black.stage.bounds;
+
+        this.highlight = new Graphics();
+        this.highlight.fillStyle(0xffffff, 1);
+        this.highlight.circle(0, 0, 80);
+        this.highlight.fill();
+        this.highlight.visible = false;
+        this.add(this.highlight)
+
         this._bg = new GameObject();
         this._bg.width = bb.width;
         this._bg.height = bb.height;
@@ -26,7 +35,7 @@ export default class Scene extends DisplayObject {
         const centerY = bb.bottom - height / 2 - 100;
 
         const bg = new Graphics();
-        bg.fillStyle(0xFFFFFF, 1);
+        bg.fillStyle(0xFFFFFF, 0.7);
         bg.rect(bb.left, centerY - height / 2, bb.width, height);
         bg.fill();
         this.add(bg);
@@ -80,8 +89,6 @@ export default class Scene extends DisplayObject {
                     currentX += element.width + spacing;
                 }
             }
-
-
         }
     }
 }

@@ -1,16 +1,23 @@
-import { DisplayObject, Sprite, Black } from '../../../utils/black-engine.module';
+import { DisplayObject, Sprite, Black, Graphics } from '../../../utils/black-engine.module';
+import { MessageDispatcher } from "../../../utils/black-engine.module";
 
 export default class ObjectController extends DisplayObject {
-    constructor(scene, hint) {
+    constructor(scene) {
         super();
         this._scene = scene;
         this._objects = this._scene._bg.mChildren;
+        this.highlight = this._scene.highlight;
         this._bb = Black.stage.bounds;
         this.initCheckmark();
-    }
 
+        this.messageDispatcher = new MessageDispatcher();
+
+        this.onSelectEvent = 'onSelectEvent';
+        this.onDeselectEvent = 'onDeselectEvent';
+
+    }
     onDown(x, y) {
-        this.getObjectAtPosition(x, y)
+        this.getObjectAtPosition(x, y);
     }
 
     initCheckmark() {
@@ -21,52 +28,80 @@ export default class ObjectController extends DisplayObject {
         this._checkmark.y = this._bb.height / 2;
         this._checkmark.visible = false;
         this._checkBounds = this._checkmark.getBounds();
-        this.add(this._checkmark)
+        this.add(this._checkmark);
     }
 
     getObjectAtPosition(x, y) {
-        let selectedObject = null;
+        let clickedObject = null;
 
         for (let i = 0; i < this._objects.length; i++) {
             const object = this._objects[i];
             const objectBounds = object.getBounds();
+
             if (
                 x >= objectBounds.x &&
                 x <= objectBounds.x + objectBounds.width &&
                 y >= objectBounds.y &&
                 y <= objectBounds.y + objectBounds.height
             ) {
-                selectedObject = object;
-                console.log('Object selected:', selectedObject);
-                this.hide(selectedObject);
-                break; // Exit the loop after finding the first selected object
-            } else if (x >= this._checkBounds.x &&
+                clickedObject = object;
+                break; // Exit the loop after finding the clicked object
+            } else if (
+                x >= this._checkBounds.x &&
                 x <= this._checkBounds.x + this._checkBounds.width &&
                 y >= this._checkBounds.y &&
-                y <= this._checkBounds.y + this._checkBounds.height) {
-                selectedObject = object;
-
-                this.show(selectedObject);
+                y <= this._checkBounds.y + this._checkBounds.height
+            ) {
+                clickedObject = object;
             }
         }
 
-        if (!selectedObject) {
-            console.log('No object selected');
-
+        if (clickedObject === this.selectedObject) {
+            this.deselectObject(clickedObject);
+        } else {
+            this.selectObject(clickedObject);
         }
     }
 
-    show(object) {
-        object.visible = true;
-        object.active = false;
-        this._checkmark.visible = false;
-        console.log("showing")
+    selectObject(object) {
+        const objectIndex = this._objects.indexOf(object);
+
+        this.deselectObject(); // Deselect the previously selected object
+
+        if (object) {
+            this.selectedObject = object;
+            this.activateObject(this.selectedObject);
+            this.messageDispatcher.post('onSelectEvent', objectIndex);
+
+        } else {
+            console.log('No object selected');
+        }
     }
 
-    hide(object) {
-        object.visible = false;
+    deselectObject() {
+        if (this.selectedObject) {
+            const objectIndex = this._objects.indexOf(this.selectedObject);
+
+            this.messageDispatcher.post('onDeselectEvent', objectIndex);
+
+
+            this.deactivateObject(this.selectedObject);
+            this.selectedObject = null;
+        }
+    }
+
+    activateObject(object) {
+        this.highlight.visible = true;
         object.active = true;
-        console.log("hiding element")
         this._checkmark.visible = true;
+
+        this.highlight.x = object.x + object.width / 2;
+        this.highlight.y = object.y + object.height / 2;
+    }
+
+    deactivateObject(object) {
+        this.highlight.visible = false;
+        object.active = false;
+        this._checkmark.visible = false;
     }
 }

@@ -12,6 +12,8 @@ export default class Game {
 
     this.messageDispatcher = new MessageDispatcher();
     this.onFinishEvent = 'onFinishEvent';
+    this.onSelectEvent = 'onSelectEvent';
+    this.onDeselectEvent = 'onDeselectEvent';
 
     this._scene = scene;
     this._camera = camera;
@@ -58,6 +60,18 @@ export default class Game {
     this._layout2d.on(this._layout2d.onPlayBtnClickEvent, (msg) => {
       this._state = STATES.FINAL;
       this.messageDispatcher.post(this.onFinishEvent);
+    });
+
+
+    this._layout2d.messageDispatcher.on(this._layout2d.onSelectEvent, (msg) => {
+      this.onSelectEvent = 'onSelectEvent'
+      console.log("onSelectEvent")
+
+    });
+    this._layout2d.messageDispatcher.on(this._layout2d.onDeselectEvent, (msg) => {
+      console.log("onDeselectEvent")
+
+      this.onDeselectEvent = 'onDeselectEvent';
     });
   }
 

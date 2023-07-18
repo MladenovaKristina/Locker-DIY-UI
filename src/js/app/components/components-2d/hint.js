@@ -57,13 +57,19 @@ export default class Hint extends DisplayObject {
     }
 
     _makeStep(count) {
-        const activeItems = this._sceneElements.filter(item => item.visible); // Filter active outfits
+        const activeItems = this._sceneElements.filter(item => item.visible && !item.active);
 
         const index = count() % activeItems.length;
+        if (activeItems.length <= 0) this._hand.visible = false;
+        else this._hand.visible = true;
 
         this._hand.x = activeItems[index].x + activeItems[index].width / 2;
 
         this.tap();
+
+
+
+
     }
 
     tap() {

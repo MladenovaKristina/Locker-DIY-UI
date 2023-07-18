@@ -1,6 +1,6 @@
 import { Scene } from 'three';
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease } from '../../../utils/black-engine.module';
+import { Tween, Black, Graphics, Sprite, DisplayObject, MessageDispatcher, Ease } from '../../../utils/black-engine.module';
 import Helpers from '../../helpers/helpers';
 import Scenes from './scenes';
 
@@ -8,6 +8,7 @@ export default class SceneController extends DisplayObject {
     constructor() {
         super();
         this._sceneNumer = 4;
+
     }
 
     onAdded() {
