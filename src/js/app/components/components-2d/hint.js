@@ -4,7 +4,7 @@ import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
 
 export default class Hint extends DisplayObject {
-    constructor(sceneNumber, sceneElements) {
+    constructor(sceneElements) {
         super();
 
         this._sign = null;
@@ -14,7 +14,6 @@ export default class Hint extends DisplayObject {
 
         this.visible = true;
 
-        this._sceneNumber = sceneNumber;
         this._sceneElements = sceneElements;
 
         this._bb = Black.stage.bounds;
@@ -58,9 +57,11 @@ export default class Hint extends DisplayObject {
     }
 
     _makeStep(count) {
-        const index = count() % this._sceneElements.length;
+        const activeItems = this._sceneElements.filter(item => item.visible); // Filter active outfits
 
-        this._hand.x = this._sceneElements[index].x;
+        const index = count() % activeItems.length;
+
+        this._hand.x = activeItems[index].x + activeItems[index].width / 2;
 
         this.tap();
     }

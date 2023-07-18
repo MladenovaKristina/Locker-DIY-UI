@@ -8,6 +8,8 @@ import TopText from './top-text';
 import Tutorial from './tutorial';
 import ReferencePhoto from './ref-photo';
 import SceneController from './scene-controller';
+import ObjectController from './object-controller';
+import Hint from './hint';
 
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
@@ -40,6 +42,8 @@ export default class Layout2D extends DisplayObject {
     this._createLogo();
     this._createDownloadBtn();
     this._initSceneController();
+    this._initObjectController();
+    this._initHint();
 
     this.onResize();
     Black.stage.on('resize', this.onResize, this);
@@ -108,10 +112,16 @@ export default class Layout2D extends DisplayObject {
     this._sceneController = new SceneController();
     this.add(this._sceneController)
   }
-  // 
-  //   showHint() {
-  //     this._tutorial.show();
-  //   }
+
+  _initHint() {
+    this._hint = new Hint(this._sceneController._scenes._sceneElements);
+    this.add(this._hint)
+  }
+
+  _initObjectController() {
+    this._objectController = new ObjectController(this._sceneController._scenes, this._hint);
+    this.add(this._objectController)
+  }
 
   onDown(x, y) {
     const defaultPos = { x: x, y: y };
@@ -122,6 +132,7 @@ export default class Layout2D extends DisplayObject {
 
     // this._tutorial.hide();
     this._endScreen.onDown(blackPos.x, blackPos.y);
+    this._objectController.onDown(blackPos.x, blackPos.y);
   }
 
   onMove(x, y) {

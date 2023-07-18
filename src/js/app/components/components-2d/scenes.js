@@ -1,30 +1,37 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease } from '../../../utils/black-engine.module';
+import { Tween, Black, Graphics, Sprite, DisplayObject, GameObject, Ease } from '../../../utils/black-engine.module';
 import Helpers from '../../helpers/helpers';
+import UIObject from './object';
 
 export default class Scene extends DisplayObject {
     constructor(sceneNumber) {
         super();
         this._sceneNumber = sceneNumber;
         this._bg = null;
+        this.object = null;
         this._sceneElements = [];
         this.initView();
     }
 
     initView() {
         const bb = Black.stage.bounds;
-        this._bg = new Graphics();
-        this._bg.fillStyle(0xFFFFFF, 1);
+        this._bg = new GameObject();
+        this._bg.width = bb.width;
+        this._bg.height = bb.height;
+
         const height = 200;
         const circleSize = 70;
 
-        const centerX = bb.width / 2.5;
+        const centerX = bb.width / 2;
         const centerY = bb.bottom - height / 2 - 100;
 
-        this._bg.rect(bb.left, centerY - height / 2, bb.width, height);
-        this._bg.fill();
+        const bg = new Graphics();
+        bg.fillStyle(0xFFFFFF, 1);
+        bg.rect(bb.left, centerY - height / 2, bb.width, height);
+        bg.fill();
+        this.add(bg);
 
-        this.addChild(this._bg);
+        this.add(this._bg);
 
         if (this._sceneNumber === 0) {
             const colors = [0xFFFF00, 0xFF0000, 0x800080, 0x0000FF];
@@ -32,27 +39,23 @@ export default class Scene extends DisplayObject {
             for (let i = 0; i < colors.length; i++) {
                 const color = new Graphics();
                 color.fillStyle(colors[i], 1);
-                color.circle(centerX - (colors.length) * 40 + i * 200 - 70, centerY, circleSize);
+                color.circle(centerX - (colors.length) * 40 + i * 200 - circleSize * 2, centerY, circleSize);
                 color.fill();
-                this._bg.addChild(color);
-            }
-            const colorGraphics = this._bg.mChildren.filter(child => child instanceof Graphics);
 
+                const colorContainer = new GameObject();
+                colorContainer.addChild(color);
+
+
+                this._bg.addChild(colorContainer);
+                //this doesnt work becayse Graphics dont have x position unfortionately idk how to fix
+            }
 
         } else {
             const spriteCategories = ['wallpaper', 'light', 'decoration', 'spray', 'stickers'];
             const category = spriteCategories[this._sceneNumber - 1];
 
             for (let i = 0; i < 4; i++) {
-                const spriteName = `${category}_${i}`;
-                const element = new Sprite(spriteName);
-                const aspectRatio = element.width / element.height;
-                const desiredHeight = height;
-                element.height = desiredHeight;
-                element.width = desiredHeight * aspectRatio;
-                element.y = centerY - element.height / 2;
-
-                this._bg.addChild(element);
+                this.object = new UIObject(category, i, height, this._bg, centerY);
             }
 
             if (this._bg.mChildren && this._bg.mChildren.length > 0) {
@@ -67,7 +70,7 @@ export default class Scene extends DisplayObject {
                 }
 
                 // Calculate spacing between elements
-                const spacing = (this._bg.width - totalWidth) / (childrenCount + 1);
+                const spacing = (bb.width - totalWidth) / (childrenCount + 1);
 
                 // Position elements with even spacing
                 let currentX = 0 - this._bg.mChildren[0].width * 0.8;
