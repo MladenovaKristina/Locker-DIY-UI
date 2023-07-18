@@ -128,13 +128,13 @@ export default class Layout2D extends DisplayObject {
     this._objectController = new ObjectController(this._sceneController._scenes, this._hint);
     this.add(this._objectController)
 
-    this._objectController.messageDispatcher.on(this._objectController.onSelectEvent, (msg) => {
+    this._objectController.messageDispatcher.on(this._objectController.onSelectEvent, (msg, elementSelected) => {
       this.onSelectEvent = 'onSelectEvent';
-      this.messageDispatcher.post(this.onSelectEvent, msg);
+      this.messageDispatcher.post(this.onSelectEvent, elementSelected);
     });
-    this._objectController.messageDispatcher.on(this._objectController.onDeselectEvent, (msg) => {
+    this._objectController.messageDispatcher.on(this._objectController.onDeselectEvent, (msg, elementSelected) => {
       this.onDeselectEvent = 'onDeselectEvent';
-      this.messageDispatcher.post(this.onDeselectEvent, msg);
+      this.messageDispatcher.post(this.onDeselectEvent, elementSelected);
 
     });
   }

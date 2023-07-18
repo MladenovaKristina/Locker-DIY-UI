@@ -15,7 +15,9 @@ export default class ObjectController extends DisplayObject {
         this.onSelectEvent = 'onSelectEvent';
         this.onDeselectEvent = 'onDeselectEvent';
 
+        this.selectedObject = null;
     }
+
     onDown(x, y) {
         this.getObjectAtPosition(x, y);
     }
@@ -52,7 +54,8 @@ export default class ObjectController extends DisplayObject {
                 y >= this._checkBounds.y &&
                 y <= this._checkBounds.y + this._checkBounds.height
             ) {
-                clickedObject = object;
+                clickedObject = null; // Set clickedObject to null when checkmark is pressed
+                break; // Exit the loop after finding the clicked object
             }
         }
 
@@ -64,27 +67,31 @@ export default class ObjectController extends DisplayObject {
     }
 
     selectObject(object) {
-        const objectIndex = this._objects.indexOf(object);
+        const elementSelected = this._objects.indexOf(object);
 
-        this.deselectObject(); // Deselect the previously selected object
+        if (this.selectedObject) {
+            const selectedElementIndex = this._objects.indexOf(this.selectedObject);
+            if (selectedElementIndex !== -1) {
+                this.messageDispatcher.post(this.onDeselectEvent, selectedElementIndex);
+            }
+            this.selectedObject = null; // Deselect the current item
+        }
 
         if (object) {
             this.selectedObject = object;
             this.activateObject(this.selectedObject);
-            this.messageDispatcher.post('onSelectEvent', objectIndex);
-
+            this.messageDispatcher.post(this.onSelectEvent, elementSelected);
         } else {
             console.log('No object selected');
         }
     }
 
-    deselectObject() {
+    deselectObject(object) {
         if (this.selectedObject) {
-            const objectIndex = this._objects.indexOf(this.selectedObject);
-
-            this.messageDispatcher.post('onDeselectEvent', objectIndex);
-
-
+            const selectedElementIndex = this._objects.indexOf(this.selectedObject);
+            if (selectedElementIndex !== -1) {
+                this.messageDispatcher.post(this.onDeselectEvent, selectedElementIndex);
+            }
             this.deactivateObject(this.selectedObject);
             this.selectedObject = null;
         }

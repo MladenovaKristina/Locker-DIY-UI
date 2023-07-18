@@ -63,13 +63,13 @@ export default class Game {
     });
 
 
-    this._layout2d.messageDispatcher.on(this._layout2d.onSelectEvent, (msg) => {
+    this._layout2d.messageDispatcher.on(this._layout2d.onSelectEvent, (msg, elementSelected) => {
       this.onSelectEvent = 'onSelectEvent'
-      console.log("onSelectEvent")
+      console.log("onSelectEvent", elementSelected)
 
     });
-    this._layout2d.messageDispatcher.on(this._layout2d.onDeselectEvent, (msg) => {
-      console.log("onDeselectEvent")
+    this._layout2d.messageDispatcher.on(this._layout2d.onDeselectEvent, (msg, elementSelected) => {
+      console.log("onDeselectEvent", elementSelected)
 
       this.onDeselectEvent = 'onDeselectEvent';
     });

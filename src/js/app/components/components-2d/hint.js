@@ -66,10 +66,6 @@ export default class Hint extends DisplayObject {
         this._hand.x = activeItems[index].x + activeItems[index].width / 2;
 
         this.tap();
-
-
-
-
     }
 
     tap() {
