@@ -16,15 +16,15 @@ export default class Hint extends DisplayObject {
 
         this._sceneNumber = sceneNumber;
         this._sceneElements = sceneElements;
+
+        this._bb = Black.stage.bounds;
     }
 
     onAdded() {
-
         // this._sign.blendMode = 'mask';
-        const bb = Black.stage.bounds;
         this._hand = new TutorialHand();
         this._hand.x = this._sceneElements[0].x;
-        this._hand.y = bb.bottom - 300;
+        this._hand.y = this._bb.bottom - 300;
 
         this.add(this._hand);
 
@@ -35,35 +35,43 @@ export default class Hint extends DisplayObject {
 
     show() {
         if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'NONE') return;
-
-        console.log('show');
         this.visible = true;
-
-        const numElements = this._sceneElements.length;
-        let currentIndex = 0;
-
-        const tapAndMove = new Tween(
-            {
-                scaleX: [1, 0.7, 1],
-                scaleY: [1, 0.7, 1],
-            },
-            1,
-            { ease: Ease.sinusoidalOut, delay: 1 }
-        );
-
-        tapAndMove.on('complete', () => {
-            currentIndex++;
-            if (currentIndex === numElements) {
-                currentIndex = 0;
-            }
-            const nextElement = this._sceneElements[currentIndex];
-            this._hand.x = nextElement.x;
-
-        });
-
-        this._hand.add(tapAndMove);
+        this.startHint();
     }
 
+    startHint() {
+        this._hintTimer = new Timer(1.2, Infinity);
+        this.add(this._hintTimer);
+
+        const getCounter = function () {
+            let value = 0;
+            return function () { return value++; }
+        }
+        const count = getCounter();
+
+        this._hintTimer.on('tick', msg => {
+            this._makeStep(count);
+        });
+
+        this._hand.visible = true;
+        this._makeStep(count);
+    }
+
+    _makeStep(count) {
+        const index = count() % this._sceneElements.length;
+
+        this._hand.x = this._sceneElements[index].x;
+
+        this.tap();
+    }
+
+    tap() {
+        this._hand.y = this._bb.bottom - this._hand.height * 1.2;
+        const moveTween = new Tween({
+            y: [this._hand.y - 30, this._hand.y + 30]
+        }, 0.5, { ease: Ease.sinusoidalInOut });
+        this._hand.add(moveTween);
+    }
 
     hide() {
         const hideTween = new Tween({

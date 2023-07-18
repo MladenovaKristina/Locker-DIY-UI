@@ -8,7 +8,7 @@ import Hint from './hint';
 export default class SceneController extends DisplayObject {
     constructor() {
         super();
-        this._sceneNumer = 0;
+        this._sceneNumer = 1;
     }
 
     onAdded() {
